@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Video Call</title>
+    <title>Video Call UI Template</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,8 +13,7 @@
         }
 
         body {
-            background-color: #0f172a;
-            color: #ffffff;
+            background-color: #121212;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,177 +23,91 @@
         .call-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
-            height: 680px;
-            background: #1e293b;
-            border-radius: 20px;
+            max-width: 800px;
+            height: 500px;
+            background-color: #1e1e1e;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Remote Video Window */
+        /* Main Video Screen */
         .main-video {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            background: #000 url('https://via.placeholder.com/400x680/111827/ffffff?text=Video+Feed') center/cover no-repeat;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Self Preview Window */
-        .self-video {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 100px;
-            height: 140px;
-            background: #334155;
-            border: 2px solid #38bdf8;
-            border-radius: 12px;
             object-fit: cover;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 2;
+            background-color: #2a2a2a;
         }
 
-        /* Overlay Details */
-        .caller-info {
-            position: relative;
-            z-index: 2;
-            padding: 20px;
-            background: linear-gradient(180deg, rgba(15,23,42,0.8) 0%, rgba(15,23,42,0) 100%);
-            text-align: left;
+        /* Small Self Camera Overlay */
+        .user-video {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 160px;
+            height: 110px;
+            background-color: #333;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        .caller-name {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .call-status {
-            font-size: 14px;
-            color: #38bdf8;
-            margin-top: 4px;
-        }
-
-        /* Call Action Controls */
+        /* Control Buttons Bar */
         .controls {
-            position: relative;
-            z-index: 2;
-            padding: 30px 20px;
-            background: linear-gradient(0deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0) 100%);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
             display: flex;
-            justify-content: space-around;
-            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
 
-        .control-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
+        .btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
             border: none;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            font-size: 18px;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             backdrop-filter: blur(5px);
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            transition: background 0.3s ease;
         }
 
-        .control-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .btn-call-start {
-            background-color: #22c55e;
-            width: 65px;
-            height: 65px;
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.4);
         }
 
         .btn-end {
-            background-color: #ef4444;
-            display: none;
+            background-color: #ff4d4d;
         }
 
-        .active {
-            background-color: #ffffff;
-            color: #0f172a;
+        .btn-end:hover {
+            background-color: #ff1a1a;
         }
     </style>
 </head>
 <body>
 
-<div class="call-container">
-    <!-- Remote Main Video -->
-    <div class="main-video" id="mainVideo"></div>
+    <div class="call-container">
+        <!-- Remote User Video -->
+        <video class="main-video" autoplay playsinline poster="https://via.placeholder.com/800x500?text=Connecting..."></video>
 
-    <!-- Self Preview -->
-    <div class="self-video"></div>
+        <!-- Your Own Video Preview -->
+        <video class="user-video" autoplay playsinline muted poster="https://via.placeholder.com/160x110?text=You"></video>
 
-    <!-- Top Info Bar -->
-    <div class="caller-info">
-        <div class="caller-name">Live Video Call</div>
-        <div class="call-status" id="callStatus">Ready to connect...</div>
+        <!-- Call Action Buttons -->
+        <div class="controls">
+            <button class="btn">Mute</button>
+            <button class="btn">Camera Off</button>
+            <button class="btn btn-end">End Call</button>
+        </div>
     </div>
-
-    <!-- Action Buttons -->
-    <div class="controls">
-        <button class="control-btn" onclick="toggleMute(this)">🎤</button>
-        <button class="control-btn btn-call-start" id="startBtn" onclick="startCall()">📞</button>
-        <button class="control-btn btn-end" id="endBtn" onclick="endCall()">📵</button>
-        <button class="control-btn" onclick="toggleCam(this)">📷</button>
-    </div>
-</div>
-
-<script>
-    let isConnected = false;
-
-    function startCall() {
-        const status = document.getElementById('callStatus');
-        const startBtn = document.getElementById('startBtn');
-        const endBtn = document.getElementById('endBtn');
-
-        status.innerText = "Connecting...";
-        
-        setTimeout(() => {
-            status.innerText = "Connected • 00:01";
-            startBtn.style.display = "none";
-            endBtn.style.display = "flex";
-            isConnected = true;
-        }, 1500);
-    }
-
-    function endCall() {
-        const status = document.getElementById('callStatus');
-        const startBtn = document.getElementById('startBtn');
-        const endBtn = document.getElementById('endBtn');
-
-        status.innerText = "Call Ended";
-        endBtn.style.display = "none";
-        startBtn.style.display = "flex";
-        
-        setTimeout(() => {
-            status.innerText = "Ready to connect...";
-        }, 2000);
-    }
-
-    function toggleMute(btn) {
-        btn.classList.toggle('active');
-    }
-
-    function toggleCam(btn) {
-        btn.classList.toggle('active');
-    }
-</script>
 
 </body>
 </html>
